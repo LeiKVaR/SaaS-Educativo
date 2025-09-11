@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'SaaS',  # Nuestra aplicación principal
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de usuario personalizado
+AUTH_USER_MODEL = 'SaaS.User'
+
+# Configuración JWT
+JWT_SECRET_KEY = SECRET_KEY
+JWT_EXPIRATION_HOURS = 24
