@@ -50,11 +50,18 @@ class Document(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
     title = models.CharField(max_length=255)
     document_type = models.CharField(max_length=10, choices=DOCUMENT_TYPES)
-    google_drive_id = models.CharField(max_length=100, unique=True)
+    google_drive_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
     google_drive_url = models.URLField(blank=True)
     file_size = models.BigIntegerField(null=True, blank=True)
     imported_at = models.DateTimeField(auto_now_add=True)
     is_processed = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.google_drive_id:
+            # Generar un ID único si no se proporciona
+            import uuid
+            self.google_drive_id = f"local_{uuid.uuid4().hex[:16]}"
+        super().save(*args, **kwargs)
     
     class Meta:
         ordering = ['-imported_at']
