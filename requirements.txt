@@ -1,0 +1,4 @@
+Django==5.2.6
+mysqlclient==2.2.4
+# Alternative MySQL client (uncomment if mysqlclient installation fails)
+# PyMySQL==1.1.0
