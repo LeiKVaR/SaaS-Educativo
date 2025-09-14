@@ -24,17 +24,25 @@ class GoogleDriveService:
             credentials_path = os.path.join(settings.BASE_DIR, 'google_credentials.json')
             
             if os.path.exists(credentials_path):
-                self.credentials = Credentials.from_service_account_file(
-                    credentials_path,
-                    scopes=['https://www.googleapis.com/auth/drive']
-                )
-                self.service = build('drive', 'v3', credentials=self.credentials)
+                try:
+                    self.credentials = Credentials.from_service_account_file(
+                        credentials_path,
+                        scopes=['https://www.googleapis.com/auth/drive']
+                    )
+                    self.service = build('drive', 'v3', credentials=self.credentials)
+                    print("✅ Google Drive API configurado correctamente")
+                except Exception as cred_error:
+                    print(f"⚠️  Error con las credenciales de Google: {cred_error}")
+                    print("   Verifica que el archivo google_credentials.json tenga credenciales válidas")
+                    self.service = None
             else:
                 print("⚠️  Archivo de credenciales de Google no encontrado")
                 print("   Crea un Service Account y descarga google_credentials.json")
+                self.service = None
                 
         except Exception as e:
             print(f"Error configurando Google Drive: {e}")
+            self.service = None
     
     def create_document(self, title="Nuevo Documento"):
         """Crea un nuevo Google Doc"""

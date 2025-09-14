@@ -78,7 +78,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'SaaS',      # Nombre de tu base de datos
         'USER': 'root',         # Usuario de MySQL Workbench
-        'PASSWORD': 'marshmellox300',  # Contraseña correcta
+        'PASSWORD': '123456',  # Contraseña correcta
         'HOST': 'localhost',     # Si MySQL está local, si no la IP del servidor
         'PORT': '3306',          # Puerto por defecto de MySQL
     }
