@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "saas-backends",
+  "private_key_id": "d0f61b39394c083ccae6e52cfc4ff91aad358552",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCkGAIONB7GBxKo\nICd3U16nOKxNiahWEH2IgcOC7o04J5W9Tb3fJp6RwU1tWCbHg3yTRTwz6FoRHJrV\nZGRP6PMC8BIEAAcuc+V65uYAmidqzJ2OYczWTl4676manUE4loPl1wlYfJIvUAMr\nDIb1I+RXiC+EKbBQ+w6t3o7elNPJ56JBTHjgWHra/dc04A4prVmWWO+HMA2hyA/h\nNmAtCvzvK6fCTqEtAi4as2VEkjVsNfjjJYG+62nCS+bLBXvDap6ynWNAgWXL0xYt\nO7RKBPezW727WLDpGx7tpiKXu5Tui3XnQ3DuURD1VxugVNLS0ZUmFQ7Lm55L/zl/\nlD1s/Kp7AgMBAAECggEAQJkA6iWDfdKX+h6aWsOzreHGFsobvjHEsWHgHSGa72HJ\n9Vlu5zOVVezCdcqvjXhKKNGnJwoPts/LdjkMslaSn/PxK6j1KsjOLIlMPy1wWf9O\nARioIi98sffaDTddzxCVwPvbvn1fsQdvD9nhIQztnbXLetxMgDytJS5JkP8GtuL6\nbsaeRGx02S4MhnfQ02gBrgY7ggsNQ0Yc+JQ7DcS2UWAWFYCIfbBKlJLbAucWube7\nU0R3lLa7M22Qm0iKLZj+uSS8Q1o6im1GZMqaWEuIzhQR3nlh+pVthmTRmaVtIx7t\nACz5jHxOFpMf6lxnCDTfhQM2QwZqHLHdFR1qBc7NCQKBgQDg+okTMPQGm6nppN/W\nyyYa+3QFcf2gFhqLt8PAs2IPhK5039QfwTBuQ/gDPk9zw5KuPvaLgD61cyMueszv\nzRqp9ZuHMpC1wLREzhFrKlJf9EFCak6+CNsb5oeiC4DgogbfQilkjPVda2OzxHfB\nrDiSav7XFkeBr3fwGs2jwU0N0wKBgQC6uFAYZuexkXGmOSjAoJwpIxVw3qGxWVYa\n4WRq1eDpB38YKsEOSokv6Wl69miGnuoABx6YkCWHUr0PAl8AnyUXgs0gYEsiRtOx\n8OZGN61NkD/0iBADD2iR1jEm4H4NNyst02VvAxbcrzaaJafCLNXFGOX9nl7mvDY4\nfZeo4oZ/uQKBgH/XvjbqlXB/2lDLgOr0q6Wfh/FkMiRbCyCj/xesl6eL1PrTCh41\nUIkIFJH7QXjeBKcBXmYtLPU9BRvvai9GVMWJrKRp5nNxmr6SfrFv7jlaeg78i9xO\n+ftjx2UctlJvoAoT9aOOugso8BICLa8fZ1JEfKXKoj2ecUA+auaH/HpDAoGAZeQ8\neQR2vPRkc1PPxEYg0WX+xkgHLlNU5HhIpvAtupxHo7V5AkZ0VHvn/pzGb2f6w6ce\n8BwBDrZ8ytr9YsZ1pD3RmDBT79F8piaSUpEBdkkYTWWOb00SQDsFOXTZ9HY9jtVE\nDe8+o5DNmBKiWBjFUrgCkYLBwOHGKM+IWjW7NakCgYAe37FFCLmFcN5F69okTCqn\nIEpxc93ntkg+SB7Cc+S3YM4jhIUgnhGlleqCqyFAtJde5dpAdfOXtHv6vObVWJBE\nufAyUGQetVmKEGVsa8NpwW9C8l3devjx0pgYenevas++WyNwawPf5KwetDIP/btI\nb6W0AG8NxONJoXR54DlNmA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "django-drive-service@saas-backends.iam.gserviceaccount.com",
+  "client_id": "114633109406233866251",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/django-drive-service%40saas-backends.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
