@@ -59,26 +59,37 @@ def create_document(request):
 @jwt_required
 @require_http_methods(["GET"])
 def list_files(request):
-    """Listar archivos PDF y Excel de Google Drive - Disponible para todos los usuarios"""
+    """Listar archivos creados o importados por el usuario (multi-tenant)"""
     try:
-        files, error = drive_service.list_files()
-        
-        if error:
-            return JsonResponse({
-                'error': error,
-                'code': 'DRIVE_ERROR'
-            }, status=500)
-        
+        documents = Document.objects.filter(user=request.user)
+
+        files = []
+        for doc in documents:
+            doc_info = {
+                "id": doc.id,
+                "title": doc.title,
+                "type": doc.document_type,
+                "google_drive_id": doc.google_drive_id,
+                "google_drive_url": doc.google_drive_url,
+                "imported_at": doc.imported_at.isoformat() if doc.imported_at else None,
+                "is_processed": doc.is_processed,
+            }
+
+            # Si es Excel, agregar cantidad de filas procesadas
+            if doc.document_type == "EXCEL":
+                doc_info["rows_count"] = doc.excel_rows.count()
+
+            files.append(doc_info)
+
         return JsonResponse({
-            'message': f'Se encontraron {len(files)} archivos',
-            'files': files,
-            'user_membership': get_user_membership(request.user)
+            "message": f"Se encontraron {len(files)} archivos para el usuario {request.user.username}",
+            "files": files,
         })
-        
+
     except Exception as e:
         return JsonResponse({
-            'error': f'Error interno: {str(e)}',
-            'code': 'INTERNAL_ERROR'
+            "error": f"Error interno: {str(e)}",
+            "code": "INTERNAL_ERROR"
         }, status=500)
 
 @jwt_required

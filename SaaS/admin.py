@@ -20,6 +20,7 @@ class UserAdmin(BaseUserAdmin):
         return MembershipHistory.get_current_membership(obj)
     get_current_membership.short_description = 'Membresía Actual'
 
+
 @admin.register(MembershipHistory)
 class MembershipHistoryAdmin(admin.ModelAdmin):
     list_display = ('user', 'membership_type', 'started_at', 'ended_at', 'is_active')
@@ -27,6 +28,7 @@ class MembershipHistoryAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'user__username')
     ordering = ('-started_at',)
     readonly_fields = ('started_at',)
+
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
@@ -36,6 +38,14 @@ class DocumentAdmin(admin.ModelAdmin):
     ordering = ('-imported_at',)
     readonly_fields = ('imported_at', 'google_drive_id')
 
+    # 🔐 Restringir documentos visibles
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+
 @admin.register(ExcelRow)
 class ExcelRowAdmin(admin.ModelAdmin):
     list_display = ('document', 'row_number', 'created_at')
@@ -43,6 +53,14 @@ class ExcelRowAdmin(admin.ModelAdmin):
     search_fields = ('document__title', 'document__user__email')
     ordering = ('document', 'row_number')
     readonly_fields = ('created_at',)
+
+    # 🔐 Restringir filas a documentos del usuario
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(document__user=request.user)
+
 
 @admin.register(AuthToken)
 class AuthTokenAdmin(admin.ModelAdmin):
