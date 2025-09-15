@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  
+</head>
+<body>
+  <div class="login-container">
+    <form id="loginForm" class="login-box">
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email" required />
+      <input type="password" id="loginPass" placeholder="Contraseña" required />
+      <button type="submit">Ingresar</button>
+      <p>¿No tienes cuenta? <a href="{% url 'register_page' %}">Regístrate aquí</a></p>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPass").value;
+
+      const res = await fetch("{% url 'login_api' %}", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(`Bienvenido ${data.user.email} (rol: ${data.user.membership})`);
+        // Guardar token en localStorage
+        localStorage.setItem("token", data.token);
+        window.location.href = "{% url 'home' %}";
+      } else {
+        alert(data.error || "Credenciales inválidas");
+      }
+    });
+  </script>
+</body>
+</html>
+

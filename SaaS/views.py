@@ -3,17 +3,28 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from .models import User, MembershipHistory
-from .utils import generate_jwt_token, jwt_required, premium_required, get_user_membership
+from .utils import generate_jwt_token, jwt_required, get_user_membership
 
-# Create your views here.
 
+# ---------- Renderizado de páginas ----------
+
+def home(request):
+    return render(request, "home.html")
+
+def login_view(request):
+    return render(request, "Login.html")
+
+def register_view(request):
+    return render(request, "Register.html")
+
+
+# ---------- API JSON ----------
 @csrf_exempt
 @require_http_methods(["POST"])
-def register(request):
-    """Registro de nuevos usuarios"""
+def register_api(request):
+    """Registro de nuevos usuarios (API)"""
     try:
         data = json.loads(request.body)
         email = data.get('email')
@@ -40,7 +51,7 @@ def register(request):
             password=make_password(password)
         )
         
-        # Crear membresía FREE por defecto
+        # Membresía FREE por defecto
         MembershipHistory.objects.create(
             user=user,
             membership_type='FREE'
@@ -71,10 +82,11 @@ def register(request):
             'code': 'INTERNAL_ERROR'
         }, status=500)
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
-def login(request):
-    """Inicio de sesión de usuarios"""
+def login_api(request):
+    """Inicio de sesión de usuarios (API)"""
     try:
         data = json.loads(request.body)
         email = data.get('email')
@@ -86,7 +98,7 @@ def login(request):
                 'code': 'MISSING_FIELDS'
             }, status=400)
         
-        # Buscar usuario por email
+        # Buscar usuario
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
@@ -102,7 +114,7 @@ def login(request):
                 'code': 'INVALID_CREDENTIALS'
             }, status=401)
         
-        # Generar token JWT
+        # Generar token
         token = generate_jwt_token(user)
         membership = get_user_membership(user)
         
@@ -127,6 +139,7 @@ def login(request):
             'error': f'Error interno: {str(e)}',
             'code': 'INTERNAL_ERROR'
         }, status=500)
+
 
 @jwt_required
 @require_http_methods(["GET"])

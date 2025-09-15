@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+</head>
+<body>
+     <div class="Conteiner-Home">
+        <div class="Conteiner-Head">
+
+            <div class="Head-Logo">
+                <h2>SaaS</h2>
+            </div>
+            <div class="Head-Detalles">
+                <h3>Juan Perez</h3>
+                <span>FREE</span>
+                <button id="btn-logout" type="button" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Cerrar sesión</button>
+            </div>
+
+        </div>
+        <div class="Contenedor-Main">
+            <div class="Opciones-Laterales">
+                <button id="btn-create-doc">Crear Documento</button>
+                <button id="btn-list-drive">Listar Archivos (Drive)</button>
+                <button id="btn-list-imported">Mis Documentos Importados</button>
+            </div>
+            <div class="Opciones-Principales">
+                <div id="section-feedback" class="Creacion-Drive"></div>
+                <div id="section-drive" class="Conteiner-Listar"></div>
+                <div id="section-imported" class="Conteiner-Listar"></div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+    (function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = "{% url 'login' %}";
+            return;
+        }
+
+        const feedback = document.getElementById('section-feedback');
+        const sectionDrive = document.getElementById('section-drive');
+        const sectionImported = document.getElementById('section-imported');
+        const btnCreate = document.getElementById('btn-create-doc');
+        const btnListDrive = document.getElementById('btn-list-drive');
+        const btnListImported = document.getElementById('btn-list-imported');
+        const btnLogout = document.getElementById('btn-logout');
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                try { localStorage.removeItem('token'); } catch (e) {}
+                window.location.href = "{% url 'login' %}";
+            });
+        }
+
+        // Cargar perfil para encabezado
+        fetch("{% url 'profile' %}", {
+            headers: { 'Authorization': `Bearer ${token}` }
+        }).then(r => r.ok ? r.json() : Promise.reject(r)).then(data => {
+            const nameEl = document.querySelector('.Head-Detalles h3');
+            const membershipEl = document.querySelector('.Head-Detalles span');
+            if (nameEl && data.user && data.user.username) nameEl.textContent = data.user.username;
+            if (membershipEl && data.user && data.user.membership) membershipEl.textContent = data.user.membership;
+        }).catch(() => {});
+
+        function renderDriveFiles(files) {
+            if (!Array.isArray(files)) files = [];
+            const rows = files.map(f => `
+                <tr>
+                    <td>${f.name || ''}</td>
+                    <td>${f.mimeType || ''}</td>
+                    <td><button data-fileid="${f.id || ''}" class="btn-import">Importar</button></td>
+                </tr>
+            `).join('');
+            sectionDrive.innerHTML = `
+                <h2>Archivos en Google Drive</h2>
+                <table class="Listar-Archivos">
+                    <thead>
+                        <tr><th>Nombre</th><th>Tipo</th><th>Acción</th></tr>
+                    </thead>
+                    <tbody>${rows || ''}</tbody>
+                </table>
+            `;
+            sectionDrive.querySelectorAll('.btn-import').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const fileId = btn.getAttribute('data-fileid');
+                    if (!fileId) return;
+                    try {
+                        const res = await fetch(`${"{% url 'import_file' file_id='FILE_ID' %}".replace('FILE_ID', fileId)}`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            feedback.innerHTML = `<p>Importado: ${data.document && data.document.name ? data.document.name : 'OK'}</p>`;
+                        } else {
+                            alert(data.error || 'Error al importar');
+                        }
+                    } catch (e) {
+                        alert('Error de red al importar');
+                    }
+                });
+            });
+        }
+
+        function renderImported(docs) {
+            if (!Array.isArray(docs)) docs = [];
+            const rows = docs.map(d => `
+                <tr>
+                    <td>${d.name || ''}</td>
+                    <td>${d.google_drive_id || ''}</td>
+                    <td>${d.created_at || ''}</td>
+                </tr>
+            `).join('');
+            sectionImported.innerHTML = `
+                <h2>Mis Documentos Importados</h2>
+                <table class="Listar-Archivos">
+                    <thead>
+                        <tr><th>Nombre</th><th>Drive ID</th><th>Creado</th></tr>
+                    </thead>
+                    <tbody>${rows || ''}</tbody>
+                </table>
+            `;
+        }
+
+        btnCreate.addEventListener('click', async () => {
+            try {
+                const res = await fetch("{% url 'create_document' %}", {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    const link = data.url || (data.file && data.file.webViewLink) || '#';
+                    feedback.innerHTML = `<p>Documento creado. <a href="${link}" target="_blank">Abrir</a></p>`;
+                } else {
+                    alert(data.error || 'Error al crear documento');
+                }
+            } catch (e) {
+                alert('Error de red al crear documento');
+            }
+        });
+
+        btnListDrive.addEventListener('click', async () => {
+            try {
+                const res = await fetch("{% url 'list_files' %}", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    renderDriveFiles(data.files || data);
+                } else {
+                    alert(data.error || 'Error al listar archivos');
+                }
+            } catch (e) {
+                alert('Error de red al listar archivos');
+            }
+        });
+
+        btnListImported.addEventListener('click', async () => {
+            try {
+                const res = await fetch("{% url 'list_user_documents' %}", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    renderImported(data.documents || data);
+                } else {
+                    alert(data.error || 'Error al obtener documentos');
+                }
+            } catch (e) {
+                alert('Error de red al obtener documentos');
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

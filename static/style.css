@@ -1,0 +1,306 @@
+/* Fondo general */
+.admin-container {
+  min-height: 100vh;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Título */
+.admin-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+/* Tabla */
+.admin-table {
+  width: 80%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background: #f3f4f6;
+}
+
+/* Botones */
+.role-btn {
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.role-btn.free {
+  background: #3b82f6;
+  color: white;
+}
+
+.role-btn.free:hover {
+  background: #1d4ed8;
+}
+
+.role-btn.premium {
+  background: #facc15;
+  color: #111827;
+}
+
+.role-btn.premium:hover {
+  background: #ca8a04;
+}
+
+/* Logout */
+.logout-btn {
+  margin-top: 2rem;
+  padding: 0.75rem 2rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: #b91c1c;
+}
+
+
+.login-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* ======= Conteiner Principal ======= */
+/* ======= Conteiner Head ======= */
+
+.Conteiner-Head{
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid rgb(222, 222, 222);
+
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.Head-Logo{
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.Conteiner-Head h2{
+  margin: 0rem 0rem 0rem 1rem;
+  font-size: 2rem;
+}
+
+.Head-Detalles{
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-right: 0.5rem;
+}
+
+.Head-Detalles span{
+  display: flex;
+  justify-content: center;
+  width: 3rem;
+  background-color: green;
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+}
+
+/* ======= Conteiner Barra Lateral ======= */
+.Conteiner-Home{
+  width: 90vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.Opciones-Laterales{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem 1rem 0rem 1rem;
+  gap: 1rem;
+}
+
+.Opciones-Laterales button{
+  width: 100%;
+}
+
+button{
+  border: 1px solid rgb(206, 206, 206);
+  border-radius: 0.5rem;
+  background-color: white;
+  padding: 0.5rem;
+}
+
+button:hover{
+  border: 1px solid rgb(181, 229, 255);
+  
+}
+
+
+
+/* Opciones Principales */
+
+.Opciones-Principales{
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgb(222, 222, 222);
+  padding: 0rem 1rem 1rem 1rem;
+}
+
+.Creacion-Drive{
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0rem 0rem 0rem;
+}
+
+.Creacion-Drive p{
+  max-width: 100%;
+  background-color: rgba(204, 251, 197, 0.5);
+  padding: 1rem 1rem 1rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.Creacion-Drive button{
+  width: 15rem;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.Listar-Archivos {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+}
+
+.Listar-Archivos thead tr {
+  border-bottom: 1px solid #ccc;
+  background-color: #f5f5f5;
+}
+
+.Listar-Archivos th,
+.Listar-Archivos td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.Listar-Archivos tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.Listar-Archivos button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.Listar-Archivos button:hover {
+  background-color: #f0f0f0;
+}
+
+.Conteiner-Listar h2 {
+  margin: 0rem 0rem 1rem 0rem;
+}
+/* Contenedor Main */
+
+.Contenedor-Main{
+  display: flex;
+  border-bottom: 1px solid rgb(222, 222, 222);
+  border-left: 1px solid rgb(222, 222, 222);
+  border-right: 1px solid rgb(222, 222, 222);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .Contenedor-Main {
+    flex-direction: column; /* se apilan los elementos */
+    gap: 10px;
+  }
+  .Head-Detalles{
+    flex-direction: column; /* se apilan los elementos */
+    gap: 10px;
+  }
+
+  .Head-Detalles span{
+    flex-direction: column; /* se apilan los elementos */
+    display: none; /* desaparece completamente, como si no existiera */
+
+  }
+
+  .Opciones-Laterales{
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgb(222, 222, 222);
+  }
+
+  .Opciones-Principales{
+    border: none;
+  }
+}
+
+.login-container{
+  position: absolute;
+  inset: 0;
+}
+
+.login-box{
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+  background-color: rgb(244, 244, 244);
+  border-radius: 0.5rem;
+}
+
+.login-box input{
+  border: 1px solid rgb(232, 232, 232);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.login-box select{
+  border: 1px solid rgb(232, 232, 232);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}

@@ -17,29 +17,83 @@ class GoogleDriveService:
         self.setup_service()
     
     def setup_service(self):
-        """Configura el servicio de Google Drive"""
+        """Configura el servicio de Google Drive con múltiples fuentes de credenciales"""
         try:
-            # Para esta práctica, necesitarás crear un Service Account
-            # y descargar el archivo JSON de credenciales
-            credentials_path = os.path.join(settings.BASE_DIR, 'google_credentials.json')
-            
-            if os.path.exists(credentials_path):
-                try:
-                    self.credentials = Credentials.from_service_account_file(
-                        credentials_path,
-                        scopes=['https://www.googleapis.com/auth/drive']
-                    )
-                    self.service = build('drive', 'v3', credentials=self.credentials)
-                    print("✅ Google Drive API configurado correctamente")
-                except Exception as cred_error:
-                    print(f"⚠️  Error con las credenciales de Google: {cred_error}")
-                    print("   Verifica que el archivo google_credentials.json tenga credenciales válidas")
-                    self.service = None
-            else:
-                print("⚠️  Archivo de credenciales de Google no encontrado")
-                print("   Crea un Service Account y descarga google_credentials.json")
+            scopes = ['https://www.googleapis.com/auth/drive']
+
+            def load_credentials_info():
+                """Intenta cargar el JSON de credenciales desde varias fuentes"""
+                # 1) Variable de entorno con el JSON completo
+                env_json = os.getenv('GOOGLE_CREDENTIALS_JSON')
+                if env_json:
+                    try:
+                        data = json.loads(env_json)
+                        return data
+                    except Exception:
+                        print("⚠️  GOOGLE_CREDENTIALS_JSON no contiene JSON válido")
+
+                # 2) settings.GOOGLE_CREDENTIALS como dict/string
+                creds_in_settings = getattr(settings, 'GOOGLE_CREDENTIALS', None)
+                if creds_in_settings:
+                    try:
+                        if isinstance(creds_in_settings, str):
+                            return json.loads(creds_in_settings)
+                        if isinstance(creds_in_settings, dict):
+                            return creds_in_settings
+                    except Exception:
+                        print("⚠️  settings.GOOGLE_CREDENTIALS no es JSON válido")
+
+                # 3) Archivo en la raíz del proyecto
+                candidates = [
+                    os.path.join(settings.BASE_DIR, 'google_credentials.json'),
+                    os.path.join(settings.BASE_DIR, 'config', 'google_credentials.json'),
+                ]
+
+                # 4) Archivo alternativo: toma el primero .json en config/ que sea de tipo service_account
+                config_dir = os.path.join(settings.BASE_DIR, 'config')
+                if os.path.isdir(config_dir):
+                    for name in os.listdir(config_dir):
+                        if name.lower().endswith('.json'):
+                            candidates.append(os.path.join(config_dir, name))
+
+                for path in candidates:
+                    if os.path.exists(path):
+                        try:
+                            with open(path, 'r', encoding='utf-8') as f:
+                                data = json.load(f)
+                            return data
+                        except Exception as e:
+                            print(f"⚠️  No se pudo leer {path}: {e}")
+                return None
+
+            info = load_credentials_info()
+            if not info:
+                print("⚠️  No se encontraron credenciales de Google.")
+                print("   Provee GOOGLE_CREDENTIALS_JSON, settings.GOOGLE_CREDENTIALS, o un archivo google_credentials.json.")
                 self.service = None
-                
+                return
+
+            # Validaciones básicas
+            if info.get('type') != 'service_account':
+                print("⚠️  El JSON de credenciales no es de tipo 'service_account'.")
+                self.service = None
+                return
+
+            # Soporte opcional para domain-wide delegation si se provee un sujeto
+            delegated_subject = getattr(settings, 'GOOGLE_IMPERSONATE_EMAIL', None) or os.getenv('GOOGLE_IMPERSONATE_EMAIL')
+            try:
+                if delegated_subject:
+                    self.credentials = Credentials.from_service_account_info(info, scopes=scopes, subject=delegated_subject)
+                else:
+                    self.credentials = Credentials.from_service_account_info(info, scopes=scopes)
+                self.service = build('drive', 'v3', credentials=self.credentials)
+                print("✅ Google Drive API configurado correctamente")
+            except Exception as cred_error:
+                print("⚠️  Error con las credenciales de Google.")
+                print("   Detalle:", cred_error)
+                print("   Revisa que la clave privada sea válida y la hora del sistema esté sincronizada.")
+                self.service = None
+
         except Exception as e:
             print(f"Error configurando Google Drive: {e}")
             self.service = None

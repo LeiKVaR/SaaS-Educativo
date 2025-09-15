@@ -2,9 +2,14 @@ from django.urls import path
 from . import views, drive_views, admin_views
 
 urlpatterns = [
-    # Autenticación
-    path('api/auth/register', views.register, name='register'),
-    path('api/auth/login', views.login, name='login'),
+    # Páginas HTML
+    path('', views.home, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register_page'),
+
+    # Autenticación (API JSON)
+    path('api/auth/register', views.register_api, name='register_api'),
+    path('api/auth/login', views.login_api, name='login_api'),
     path('api/auth/profile', views.profile, name='profile'),
     
     # Google Drive
@@ -20,3 +25,4 @@ urlpatterns = [
     path('api/admin/users', admin_views.list_users, name='list_users'),
     path('api/admin/users/<int:user_id>/membership', admin_views.change_membership, name='change_membership'),
 ]
+
