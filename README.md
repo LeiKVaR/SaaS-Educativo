@@ -1,171 +1,254 @@
-# SaaS Backend - Sistema de Gestión de Documentos con Google Drive
+# SaaS Google Drive - Documentación Completa
 
-Este es un sistema backend desarrollado en Django que permite la gestión de documentos importados desde Google Drive, con sistema de autenticación JWT y membresías (FREE/PREMIUM).
+## 📋 Descripción del Proyecto
 
-## 🚀 Características
+SaaS Google Drive es una aplicación web desarrollada en Django que permite a los usuarios crear, gestionar e importar documentos de Google Drive. La aplicación incluye un sistema de autenticación JWT, manejo de membresías (FREE/PREMIUM) y integración completa con Google Drive API.
 
-- **Autenticación JWT**: Sistema de login/registro con tokens JWT
-- **Membresías**: Sistema de membresías FREE y PREMIUM
-- **Google Drive Integration**: Importación de archivos PDF y Excel desde Google Drive
-- **Procesamiento de Datos**: Extracción y almacenamiento de datos de archivos Excel
-- **API REST**: Endpoints para todas las funcionalidades
+## 🏗️ Arquitectura del Proyecto
 
-## 📋 Requisitos Previos
+```
+SaaS/
+├── SaaS/                          # Aplicación principal Django
+│   ├── models.py                  # Modelos de datos (User, Document, etc.)
+│   ├── views.py                   # Vistas de autenticación
+│   ├── drive_views.py             # Vistas para Google Drive
+│   ├── admin_views.py             # Vistas de administración
+│   ├── google_drive_service.py    # Servicio de Google Drive API
+│   ├── utils.py                   # Utilidades (JWT, decoradores)
+│   └── urls.py                    # URLs de la aplicación
+├── config/                        # Configuración del proyecto
+│   ├── settings.py                # Configuración Django
+│   ├── urls.py                    # URLs principales
+│   └── google_credentials.json    # Credenciales Google (no commitear)
+├── templates/                     # Plantillas HTML
+│   ├── Home.html                  # Página principal
+│   ├── Login.html                 # Página de login
+│   └── Register.html              # Página de registro
+├── static/                        # Archivos estáticos
+│   └── style.css                  # Estilos CSS
+└── requirements.txt               # Dependencias Python
+```
 
+## 🚀 Instalación y Configuración
+
+### 1. Requisitos Previos
 - Python 3.8+
-- MySQL 5.7+
-- Cuenta de Google Cloud Platform (para Google Drive API)
+- MySQL/MariaDB
+- Cuenta de Google Cloud Platform
 
-## 🛠️ Instalación
-
-### 1. Clonar el repositorio
+### 2. Instalación
 ```bash
-git clone <url-del-repositorio>
-cd MODULO-1-Y-2-TRABAJO-DE-BACKENDS
-```
+# Clonar el repositorio
+git clone [url-del-repo]
+cd SaaS
 
-### 2. Crear entorno virtual
-```bash
+# Crear entorno virtual
 python -m venv env
-# En Windows:
-env\Scripts\activate
-# En Linux/Mac:
-source env/bin/activate
-```
+env\Scripts\activate  # Windows
+# source env/bin/activate  # Linux/Mac
 
-### 3. Instalar dependencias
-```bash
+# Instalar dependencias
 pip install -r requirements.txt
 ```
 
-### 4. Configurar base de datos MySQL
-1. Crear una base de datos llamada `SaaS` en MySQL
-2. Configurar las credenciales en `config/settings.py`:
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'SaaS',
-        'USER': 'tu_usuario',
-        'PASSWORD': 'tu_contraseña',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
+### 3. Configuración de Google Drive API
 
-### 5. Configurar Google Drive API
-1. Ir a [Google Cloud Console](https://console.cloud.google.com/)
-2. Crear un nuevo proyecto o seleccionar uno existente
-3. Habilitar la Google Drive API
-4. Crear una Service Account
-5. Descargar el archivo JSON de credenciales
-6. Renombrar el archivo a `google_credentials.json` y colocarlo en la raíz del proyecto
+1. **Crear proyecto en Google Cloud Console:**
+   - Ve a [Google Cloud Console](https://console.cloud.google.com/)
+   - Crea un nuevo proyecto
+   - Habilita Google Drive API
 
-### 6. Aplicar migraciones
+2. **Crear Service Account:**
+   - Ve a IAM & Admin > Service Accounts
+   - Crea un nuevo Service Account
+   - Descarga el archivo JSON de credenciales
+   - Guárdalo como `config/google_credentials.json`
+
+3. **Configurar permisos:**
+   - Asigna rol "Editor" al Service Account
+   - Asegúrate de que tenga acceso a Google Drive API
+
+### 4. Configuración de Base de Datos
 ```bash
+# Crear migraciones
+python manage.py makemigrations
+
+# Aplicar migraciones
 python manage.py migrate
-```
 
-### 7. Crear superusuario (opcional)
-```bash
+# Crear superusuario (opcional)
 python manage.py createsuperuser
 ```
 
-### 8. Ejecutar servidor
+### 5. Ejecutar la aplicación
 ```bash
 python manage.py runserver
 ```
 
-## 📚 Endpoints de la API
+## 📊 Modelos de Datos
+
+### User (Usuario personalizado)
+```python
+- email: EmailField (único)
+- username: CharField
+- created_at: DateTimeField
+- updated_at: DateTimeField
+```
+
+### MembershipHistory (Historial de membresías)
+```python
+- user: ForeignKey(User)
+- membership_type: CharField (FREE/PREMIUM)
+- started_at: DateTimeField
+- ended_at: DateTimeField
+- is_active: BooleanField
+```
+
+### Document (Documentos)
+```python
+- user: ForeignKey(User)
+- title: CharField
+- document_type: CharField (PDF/EXCEL/GDOC/GSHEET/GSLIDES)
+- google_drive_id: CharField
+- google_drive_url: URLField
+- file_size: BigIntegerField
+- imported_at: DateTimeField
+- is_processed: BooleanField
+```
+
+### ExcelRow (Filas de Excel)
+```python
+- document: ForeignKey(Document)
+- row_number: IntegerField
+- data: JSONField
+- created_at: DateTimeField
+```
+
+## 🔌 API Endpoints
 
 ### Autenticación
 - `POST /api/auth/register` - Registro de usuarios
 - `POST /api/auth/login` - Inicio de sesión
-- `GET /api/auth/profile` - Perfil del usuario (requiere JWT)
+- `GET /api/auth/profile` - Perfil del usuario
 
 ### Google Drive
-- `POST /api/drive/create-doc` - Crear Google Doc (requiere JWT)
-- `GET /api/drive/list-files` - Listar archivos de Drive (requiere JWT)
-- `POST /api/drive/import-file/<file_id>` - Importar archivo (requiere JWT + PREMIUM)
+- `POST /api/drive/create-doc` - Crear documento
+- `GET /api/drive/list-files` - Listar archivos del usuario
+- `GET /api/drive/list-google-files` - Explorar Google Drive
+- `POST /api/drive/import-file/<file_id>` - Importar archivo (PREMIUM)
 
 ### Documentos
-- `GET /api/documents` - Listar documentos del usuario (requiere JWT)
-- `GET /api/documents/<id>/rows` - Obtener filas de Excel (requiere JWT)
+- `GET /api/documents` - Listar documentos del usuario
+- `GET /api/documents/<id>/rows` - Ver filas de Excel
 
 ### Administración
 - `GET /api/admin/users` - Listar usuarios
 - `POST /api/admin/users/<id>/membership` - Cambiar membresía
 
-## 🔐 Autenticación
+## 🛠️ Componentes Principales
 
-El sistema usa JWT (JSON Web Tokens) para la autenticación. Incluye el token en el header:
+### GoogleDriveService
+Servicio principal para interactuar con Google Drive API:
 
+**Métodos principales:**
+- `setup_service()` - Configura credenciales
+- `create_document_with_type()` - Crea documentos (Docs/Sheets/Slides)
+- `list_files()` - Lista archivos de Drive
+- `import_file_to_system()` - Importa archivos al sistema
+- `process_excel_file()` - Procesa archivos Excel
+
+**Características:**
+- Manejo automático de credenciales desde múltiples fuentes
+- Soporte para diferentes tipos de documentos
+- Manejo de errores y logging detallado
+
+### Sistema de Autenticación JWT
+- Tokens JWT para autenticación stateless
+- Decoradores `@jwt_required` y `@premium_required`
+- Manejo automático de expiración de tokens
+
+### Sistema de Membresías
+- **FREE**: Acceso básico (crear documentos)
+- **PREMIUM**: Acceso completo (importar archivos)
+
+## 🎨 Frontend
+
+### Tecnologías
+- HTML5 + CSS3
+- JavaScript vanilla
+- Diseño responsive
+- Interfaz moderna con feedback visual
+
+### Características
+- Formularios para crear documentos personalizados
+- Listado de archivos con acciones
+- Manejo de errores con mensajes claros
+- Navegación intuitiva entre secciones
+
+## 🔧 Configuración Avanzada
+
+### Variables de Entorno
+```bash
+# Credenciales Google (alternativa al archivo JSON)
+GOOGLE_CREDENTIALS_JSON={"type":"service_account",...}
+
+# Email para domain-wide delegation (opcional)
+GOOGLE_IMPERSONATE_EMAIL=usuario@dominio.com
 ```
-Authorization: Bearer <tu_token_jwt>
+
+### Configuración de Django
+```python
+# settings.py
+GOOGLE_CREDENTIALS = {...}  # Dict con credenciales
+SECRET_KEY = 'tu-secret-key'
+DEBUG = False  # En producción
+ALLOWED_HOSTS = ['tu-dominio.com']
 ```
 
-## 📊 Modelos de Datos
+## 🚨 Solución de Problemas Comunes
 
-### User
-- Usuario personalizado con email como username
-- Campos: email, username, created_at, updated_at
+### Error "Invalid JWT Signature"
+1. Verificar que las credenciales sean válidas
+2. Sincronizar hora del sistema
+3. Regenerar credenciales en Google Cloud Console
 
-### MembershipHistory
-- Historial de membresías del usuario
-- Tipos: FREE, PREMIUM
+### Error "Storage quota exceeded"
+1. Liberar espacio en Google Drive
+2. Vaciar papelera de Google Drive
+3. Crear nuevo Service Account si es necesario
 
-### Document
-- Documentos importados desde Google Drive
-- Tipos: PDF, EXCEL, GDOC
+### Error de importación duplicada
+- El sistema previene importar el mismo archivo múltiples veces por usuario
 
-### ExcelRow
-- Filas de datos extraídas de archivos Excel
-- Almacena datos como JSON
+## 📝 Scripts de Utilidad
 
-### AuthToken
-- Tokens JWT para autenticación
-- Control de expiración y validez
+### Diagnóstico de Credenciales
+```bash
+python test_google_credentials.py
+```
+Verifica que las credenciales de Google funcionen correctamente.
 
-## 🎯 Funcionalidades por Membresía
+## 🔒 Seguridad
 
-### FREE
-- Registro y login
-- Crear Google Docs
-- Listar archivos de Drive
-- Ver documentos propios
-- Ver filas de Excel propios
+- Autenticación JWT con expiración
+- Validación de permisos por endpoint
+- Manejo seguro de credenciales
+- Protección CSRF en formularios
 
-### PREMIUM
-- Todas las funcionalidades FREE
-- Importar archivos de Drive al sistema
-- Procesamiento completo de archivos Excel
+## 📈 Funcionalidades Principales
 
-## 🐛 Solución de Problemas
-
-### Error de credenciales de Google
-Si ves el error sobre credenciales de Google, asegúrate de:
-1. Tener el archivo `google_credentials.json` en la raíz del proyecto
-2. Que el archivo tenga credenciales válidas de Service Account
-3. Que la Service Account tenga permisos para Google Drive API
-
-### Error de conexión a MySQL
-Verifica que:
-1. MySQL esté ejecutándose
-2. La base de datos `SaaS` exista
-3. Las credenciales en `settings.py` sean correctas
-
-## 📝 Notas de Desarrollo
-
-- El proyecto está configurado para desarrollo (DEBUG=True)
-- Para producción, cambiar DEBUG=False y configurar ALLOWED_HOSTS
-- Las credenciales de Google Drive son necesarias para las funcionalidades de Drive
-- El sistema maneja errores graciosamente cuando Google Drive no está configurado
+1. **Crear Documentos**: Google Docs, Sheets y Slides
+2. **Gestión de Archivos**: Listar y organizar documentos
+3. **Importación**: Importar archivos existentes (Premium)
+4. **Procesamiento Excel**: Extraer y visualizar datos
+5. **Sistema de Usuarios**: Registro, login y membresías
+6. **Panel Admin**: Gestión de usuarios y membresías
 
 ## 🤝 Contribución
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+Para contribuir al proyecto:
+1. Fork el repositorio
+2. Crea una rama para tu feature
+3. Implementa los cambios
+4. Añade tests si es necesario
+5. Crea un Pull Request

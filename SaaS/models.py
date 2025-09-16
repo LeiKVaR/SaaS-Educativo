@@ -45,12 +45,14 @@ class Document(models.Model):
         ('PDF', 'PDF Document'),
         ('EXCEL', 'Excel Spreadsheet'),
         ('GDOC', 'Google Document'),
+        ('GSHEET', 'Google Spreadsheet'),
+        ('GSLIDES', 'Google Presentation'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
     title = models.CharField(max_length=255)
     document_type = models.CharField(max_length=10, choices=DOCUMENT_TYPES)
-    google_drive_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    google_drive_id = models.CharField(max_length=100, null=True, blank=True)
     google_drive_url = models.URLField(blank=True)
     file_size = models.BigIntegerField(null=True, blank=True)
     imported_at = models.DateTimeField(auto_now_add=True)
@@ -65,6 +67,8 @@ class Document(models.Model):
     
     class Meta:
         ordering = ['-imported_at']
+        # Permitir el mismo google_drive_id para diferentes usuarios
+        unique_together = ['user', 'google_drive_id']
     
     def __str__(self):
         return f"{self.title} ({self.document_type})"
